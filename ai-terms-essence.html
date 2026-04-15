@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 名词本质洞察 —— 回归第一性原理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --success-light: rgba(16, 185, 129, 0.15);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0a0f1e;
+            --bg-card: #111827;
+            --bg-elevated: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #374151;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .hero h1 span {
+            color: var(--success);
+        }
+
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Section */
+        section {
+            margin: 80px 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .section-num {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            margin: 24px 0;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card h3 .icon {
+            font-size: 1.5rem;
+        }
+
+        /* Insight Box */
+        .insight-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin: 28px 0;
+        }
+
+        .insight-box.center {
+            text-align: center;
+        }
+
+        .insight-box .label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .insight-box .content {
+            font-size: 1.15rem;
+            color: var(--text-primary);
+        }
+
+        .insight-box .content .highlight-text {
+            color: var(--success);
+        }
+
+        .insight-box .content .highlight-large {
+            font-size: 1.4rem;
+            color: var(--success);
+            font-weight: 600;
+            display: block;
+            margin: 12px 0;
+        }
+
+        /* Quote */
+        .quote {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            text-align: center;
+            border-left: 4px solid var(--success);
+        }
+
+        .quote p {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+        }
+
+        .quote .author {
+            margin-top: 16px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* List */
+        .numbered-list {
+            list-style: none;
+            counter-reset: item;
+            margin: 20px 0;
+            padding: 0;
+        }
+
+        .numbered-list li {
+            counter-increment: item;
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .numbered-list li:last-child {
+            border-bottom: none;
+        }
+
+        .numbered-list .counter {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .numbered-list .content {
+            flex: 1;
+        }
+
+        .numbered-list .title {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .numbered-list .desc {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tier Card */
+        .tier-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .tier-card.highlight {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 182, 212, 0.05) 100%);
+        }
+
+        .tier-card h4 {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .tier-card .level {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .tier-card.highlight .level {
+            color: var(--success);
+        }
+
+        .tier-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Diagram */
+        .diagram-box {
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .diagram-box.highlight {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .diagram-box .title {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .diagram-box .sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .diagram-box.highlight .sub {
+            color: var(--success);
+        }
+
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+
+        .flow-arrow {
+            color: var(--text-muted);
+            font-size: 1.3rem;
+        }
+
+        /* Table */
+        .term-table {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+        }
+
+        .term-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 1fr;
+            gap: 20px;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .term-row:last-child {
+            border-bottom: none;
+        }
+
+        .term-row.header {
+            background: var(--bg-elevated);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .term-row .term {
+            color: var(--success);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .term-row .chinese {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .term-row .analogy {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .term-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                text-align: left;
+            }
+        }
+
+        /* Summary Card */
+        .summary-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border: 2px solid var(--success);
+            border-radius: 24px;
+            padding: 48px;
+            margin: 48px 0;
+            text-align: center;
+        }
+
+        .summary-card h2 {
+            font-size: 2rem;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .summary-card .formula {
+            font-size: 1.5rem;
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .summary-card .desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 2.2;
+        }
+
+        .summary-card .desc strong {
+            color: var(--success);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer p {
+            margin-bottom: 8px;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Two Column */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 24px 0;
+        }
+
+        @media (max-width: 768px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .col-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .col-card.success {
+            border-color: var(--success);
+        }
+
+        .col-card.danger {
+            border-color: var(--danger);
+        }
+
+        .col-card h4 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .col-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .col-card li {
+            padding: 8px 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .col-card li strong {
+            color: var(--text-primary);
+        }
+
+        /* Paragraph */
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .text-primary {
+            color: var(--text-primary);
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        /* Form Example */
+        .form-example {
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .form-example .form-title {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .form-example .form-line {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-example .form-line.dashed {
+            border-bottom: 1px dashed var(--border);
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        /* Center Formula */
+        .center-formula {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .center-formula .formula-text {
+            font-size: 1.3rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .center-formula .formula-sub {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <h1>AI 名词<span>本质洞察</span></h1>
+            <p class="subtitle">微调、Schema、Harness Engineering —— 回归第一性原理</p>
+        </div>
+
+        <!-- Core Insight -->
+        <div class="insight-box center">
+            <div class="label">核心洞察</div>
+            <div class="content">
+                面对 AI 领域层出不穷的新名词，<span class="text-primary">不要被术语迷惑，要看本质</span>。
+                <br><br>
+                所有这些"工程方法"的本质都是同一个问题：
+                <span class="highlight-large">"怎么让 AI 更好地为人类做事？"</span>
+                <br>
+                答案有且仅有三条路：<span class="text-primary"><strong>说清楚、管起来、改模型</strong></span>。
+            </div>
+        </div>
+
+        <div class="quote">
+            <p>"AI 领域 80% 的问题，可以通过更好的 Harness 解决，根本不需要 Fine-tuning。"</p>
+            <div class="author">— LangChain 实验结论（Terminal Bench 2.0 从 Top 30 提升到 Top 5）</div>
+        </div>
+
+        <!-- Part 1: Fine-tuning -->
+        <section id="fine-tuning">
+            <div class="section-header">
+                <div class="section-num">01</div>
+                <div>
+                    <h2 class="section-title">Fine-tuning（微调）</h2>
+                    <p class="section-subtitle">送 AI 去培训三年</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🎓</span> 一句话定义</h3>
+                <p class="text-secondary" style="font-size: 1.1rem;">
+                    <span class="text-primary" style="font-weight: 600;">Fine-tuning = 用数据训练，改变模型的"神经连接"</span>
+                </p>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🌰</span> 生活类比</h3>
+                <p class="text-secondary mb-20">想象你要让一个人学会做川菜：</p>
+                <div class="flow-row">
+                    <div class="diagram-box">
+                        <div class="title">Prompt</div>
+                        <div class="sub">给他一本菜谱</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="diagram-box">
+                        <div class="title">Harness</div>
+                        <div class="sub">给他一个川菜厨房</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="diagram-box highlight">
+                        <div class="title">Fine-tuning</div>
+                        <div class="sub">送他去四川学厨三年</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="label">代价与好处</div>
+                <div class="content">
+                    <span class="text-primary"><strong>代价</strong></span>：贵、慢、可能过拟合（学傻了）
+                    <br>
+                    <span class="text-primary"><strong>好处</strong></span>：一劳永逸，不用每次都说很多
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="col-card success">
+                    <h4>✓ 应该用</h4>
+                    <ul>
+                        <li>需要 AI 在某个领域<strong>做到极致好</strong>（医疗、法律）</li>
+                        <li>你要打造<strong>专属的数字员工</strong>（客服、销售）</li>
+                    </ul>
+                </div>
+                <div class="col-card">
+                    <h4>✗ 不该用</h4>
+                    <ul>
+                        <li>只是想让 AI <strong>偶尔做对一件事</strong></li>
+                        <li>你的<strong>数据量不够</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 2: Schema -->
+        <section id="schema">
+            <div class="section-header">
+                <div class="section-num">02</div>
+                <div>
+                    <h2 class="section-title">Schema</h2>
+                    <p class="section-subtitle">给 AI 一个"填表规范"</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">📋</span> 一句话定义</h3>
+                <p class="text-secondary" style="font-size: 1.1rem;">
+                    <span class="text-primary" style="font-weight: 600;">Schema = 规定好了格式和范围，让 AI 只能这样填</span>
+                </p>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🏥</span> 生活类比：医院挂号表</h3>
+                <div class="form-example mt-20">
+                    <p class="form-title">病人信息表</p>
+                    <p class="form-line">姓名：<span class="form-line dashed"></span></p>
+                    <p class="form-line">年龄：<span class="form-line dashed" style="width: 60px;"></span>岁&nbsp;&nbsp;&nbsp;&nbsp;性别：□ 男 □ 女</p>
+                    <p class="form-line">电话：<span class="form-line dashed"></span></p>
+                </div>
+                <p class="text-secondary mt-20">
+                    这个表格就是 <span class="text-success" style="font-weight: 600;">Schema</span>。
+                </p>
+            </div>
+
+            <div class="insight-box">
+                <div class="label">本质</div>
+                <div class="content">
+                    告诉 AI：
+                    <br>• 有什么字段（姓名、年龄...）
+                    <br>• 字段什么类型（文字、数字、日期...）
+                    <br>• 能填什么值（性别只能是男/女，年龄 0-150...）
+                    <br><br>
+                    <span class="text-primary"><strong>约束输出格式，防止 AI 瞎填</strong></span>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="col-card danger">
+                    <h4>🚫 没有 Schema</h4>
+                    <ul>
+                        <li>格式乱（可能返回一整段文字）</li>
+                        <li>字段缺（可能漏掉重要信息）</li>
+                        <li>类型乱（把日期写成"昨天"）</li>
+                        <li>值超范围（年龄写成"很大"）</li>
+                    </ul>
+                </div>
+                <div class="col-card success">
+                    <h4>✅ 有 Schema</h4>
+                    <ul>
+                        <li>格式固定（JSON / 表格）</li>
+                        <li>字段完整（该有的都有）</li>
+                        <li>类型正确（日期就是日期格式）</li>
+                        <li>值在范围内（年龄 0-150）</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 3: Harness Engineering -->
+        <section id="harness">
+            <div class="section-header">
+                <div class="section-num">03</div>
+                <div>
+                    <h2 class="section-title">Harness Engineering</h2>
+                    <p class="section-subtitle">给 AI 造一个最优环境</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🦀</span> 一句话定义</h3>
+                <p class="text-secondary" style="font-size: 1.1rem;">
+                    <span class="text-primary" style="font-weight: 600;">Harness = 不是改造 AI 本身，而是设计让 AI 更容易做对事的系统</span>
+                </p>
+                <div class="center-formula">
+                    <p class="formula-text">Agent = Model + Harness</p>
+                    <p class="formula-sub">模型提供智能，Harness 让智能变得有用</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🌰</span> 生活类比：养螃蟹</h3>
+                <div class="flow-row">
+                    <div class="diagram-box">
+                        <div class="title">Prompt</div>
+                        <div class="sub">教螃蟹怎么爬</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="diagram-box">
+                        <div class="title">Fine-tuning</div>
+                        <div class="sub">改造螃蟹基因</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="diagram-box highlight">
+                        <div class="title">Harness</div>
+                        <div class="sub">给它一个斜坡</div>
+                    </div>
+                </div>
+                <p class="text-center mt-20">
+                    <span class="text-primary"><strong>不用教、不用改造，它自然就往右滑下去了</strong></span>
+                </p>
+            </div>
+
+            <div class="insight-box">
+                <div class="label">核心公式</div>
+                <div class="content">
+                    就像养螃蟹不需要教它怎么爬，只需要给它一个<span class="text-primary"><strong>向右倾斜的池塘</strong></span>。
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3><span class="icon">🧭</span> Guides（引导）</h3>
+                    <p class="text-secondary">
+                        <span class="text-primary"><strong>在行动之前引导 AI</strong></span>
+                        <br><br>
+                        就像教练画战术板：
+                        <br>• 告诉 AI 做什么（系统提示词）
+                        <br>• 给它工具和方法（工具定义）
+                        <br>• 提前告诉它规则（架构文档）
+                        <br><br>
+                        <span class="text-success"><strong>目标</strong></span>：提高 AI 第一次就做对的概率
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3><span class="icon">📡</span> Sensors（传感器）</h3>
+                    <p class="text-secondary">
+                        <span class="text-primary"><strong>在行动之后帮助修正</strong></span>
+                        <br><br>
+                        就像监控摄像头：
+                        <br>• 观察 AI 的输出
+                        <br>• 发现错误就纠正（linter）
+                        <br>• 给它反馈让它改进
+                        <br><br>
+                        <span class="text-success"><strong>目标</strong></span>：让 AI 能够自我修正
+                    </p>
+                </div>
+            </div>
+
+            <div class="quote">
+                <p>"纯反馈系统会让 AI 重复相同的错误；<br>纯前馈系统会让 AI 从不知道是否有效。<br><span class="text-primary"><strong>只有两者结合</strong></span>，才能建立有效的控制回路。"</p>
+                <div class="author">— Martin Fowler</div>
+            </div>
+        </section>
+
+        <!-- Part 4: Three Levels -->
+        <section id="three-levels">
+            <div class="section-header">
+                <div class="section-num">04</div>
+                <div>
+                    <h2 class="section-title">三层干预框架</h2>
+                    <p class="section-subtitle">一个统一视角看所有 AI 工程方法</p>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="tier-card">
+                    <h4>Prompt</h4>
+                    <div class="level">第一层 · 嘴说</div>
+                    <p>每次对话说清楚<br>成本最低<br>但每次都要说</p>
+                </div>
+                <div class="tier-card highlight">
+                    <h4>Harness</h4>
+                    <div class="level">第二层 · 环境</div>
+                    <p>造一个让 AI<br>容易做对的环境<br><strong>性价比最高</strong></p>
+                </div>
+                <div class="tier-card">
+                    <h4>Fine-tuning</h4>
+                    <div class="level">第三层 · 改造</div>
+                    <p>训练模型本身<br>成本最高<br>但一劳永逸</p>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="label">选择原则</div>
+                <div class="content">
+                    <span class="text-primary"><strong>能用上层解决，就不要用下层。</strong></span>
+                    <br><br>
+                    Prompt 能解决的问题 → 不要做 Harness
+                    <br>
+                    Harness 能解决的问题 → 不要做 Fine-tuning
+                    <br><br>
+                    就像：能用沟通解决的事，不要写制度；
+                    <br>
+                    能写制度解决的事，不要换人。
+                </div>
+            </div>
+
+            <div class="term-table">
+                <div class="term-row header">
+                    <div>术语</div>
+                    <div>通俗解释</div>
+                    <div>生活类比</div>
+                </div>
+                <div class="term-row">
+                    <div class="term">Fine-tuning</div>
+                    <div class="chinese">送 AI 去培训</div>
+                    <div class="analogy">培养专家，成本高但一劳永逸</div>
+                </div>
+                <div class="term-row">
+                    <div class="term">Schema</div>
+                    <div class="chinese">给 AI 填表规范</div>
+                    <div class="analogy">医院挂号表，规定格式防止瞎填</div>
+                </div>
+                <div class="term-row">
+                    <div class="term">Harness</div>
+                    <div class="chinese">给 AI 造最优环境</div>
+                    <div class="analogy">养螃蟹不用教，给它一个斜坡就行</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Part 5: How to Think -->
+        <section id="how-to-think">
+            <div class="section-header">
+                <div class="section-num">05</div>
+                <div>
+                    <h2 class="section-title">如何回归本质看问题</h2>
+                    <p class="section-subtitle">一个心法，五个原则</p>
+                </div>
+            </div>
+
+            <div class="insight-box center">
+                <div class="label">核心问题</div>
+                <div class="content" style="font-size: 1.4rem;">
+                    "这个问题的本质，是<span class="text-success">什么层次</span>的问题？"
+                </div>
+            </div>
+
+            <ul class="numbered-list">
+                <li>
+                    <span class="counter">1</span>
+                    <div class="content">
+                        <div class="title">不要被术语吓到</div>
+                        <div class="desc">所有术语都是为了解决同一个问题——"让 AI 更好地做事"</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="counter">2</span>
+                    <div class="content">
+                        <div class="title">看本质，不看名字</div>
+                        <div class="desc">Agent、Harness、Workflow...名字很多，但干的事都一样</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="counter">3</span>
+                    <div class="content">
+                        <div class="title">先简单，再复杂</div>
+                        <div class="desc">能用 Prompt 解决就不要做 Harness，能用 Harness 就不要微调</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="counter">4</span>
+                    <div class="content">
+                        <div class="title">相信实验，不相信概念</div>
+                        <div class="desc">LangChain 的实验：换个 Harness，排名从 Top 30 到 Top 5</div>
+                    </div>
+                </li>
+                <li>
+                    <span class="counter">5</span>
+                    <div class="content">
+                        <div class="title">理解约束，各有权衡</div>
+                        <div class="desc">Prompt 灵活但不稳定，Harness 稳定但需要开发，Fine-tuning 强大但成本高</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Summary -->
+        <section id="summary">
+            <div class="summary-card">
+                <h2>一句话总结</h2>
+                <div class="formula">本质都是：让 AI 更好地为人类做事</div>
+                <div class="desc">
+                    <strong>微调</strong> = 送 AI 去培训
+                    <br><br>
+                    <strong>Schema</strong> = 给 AI 一个填表规范
+                    <br><br>
+                    <strong>Harness</strong> = 给 AI 造一个最优环境
+                    <br><br>
+                    能用嘴说的，就别做系统；
+                    <br>
+                    能做系统的，就别改模型。
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>参考文献：Martin Fowler、LangChain Blog、Anthropic Engineering</p>
+            <p style="margin-top: 16px;">
+                <a href="https://martinfowler.com/articles/harness-engineering.html">Harness Engineering</a> |
+                <a href="https://blog.langchain.com/the-anatomy-of-an-agent-harness/">Agent Anatomy</a> |
+                <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps">Anthropic Harness Design</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 页面导航</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+      background: #0a0f1e;
+      color: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .wrap {
+      width: min(860px, 92vw);
+      padding: 48px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(17,24,39,.95), rgba(17,24,39,.88));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    h1 {
+      font-size: 40px;
+      line-height: 1.15;
+      margin: 0 0 12px;
+    }
+    p {
+      color: #9ca3af;
+      font-size: 18px;
+      margin: 0 0 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    a.card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      padding: 24px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(99,102,241,.13), rgba(16,185,129,.10));
+      border: 1px solid rgba(255,255,255,.09);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    a.card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99,102,241,.6);
+      box-shadow: 0 12px 28px rgba(0,0,0,.22);
+    }
+    .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      color: #a5b4fc;
+      font-size: 12px;
+      letter-spacing: .08em;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .desc {
+      color: #9ca3af;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AI 页面导航</h1>
+    <p>已整理为可直接部署到 GitHub Pages 的静态页面入口。</p>
+    <div class="grid">
+      <a class="card" href="agent-nature-simple.html">
+        <div class="tag">HTML PAGE 01</div>
+        <div class="title">Agent 本质深度剖析</div>
+        <div class="desc">通俗版解释 Agent 的定义、三板斧、可靠性与记忆系统。</div>
+      </a>
+      <a class="card" href="ai-terms-essence.html">
+        <div class="tag">HTML PAGE 02</div>
+        <div class="title">AI 名词本质洞察</div>
+        <div class="desc">从第一性原理解释 Fine-tuning、Schema、Harness Engineering。</div>
+      </a>
+    </div>
+  </div>
+</body>
+</html>
